@@ -11,6 +11,8 @@ endif::[]
 This repository contains https://github.com/containers/buildah[`buildah`] scripts for building
 OCI compliant or Docker formatted voidlinux containers.
 
+It's forked from original https://gitlab.com/bougyman/voidlinux-containers/[`gitlab`] upstream repo with the intention of transitioning from gitlab pipelines to github actions, and gitlab registry to github registry.
+
 ## Usage
 
 ### Configuration
