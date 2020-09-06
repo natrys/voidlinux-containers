@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # author is simply the maintainer tag in image/container metadata
-: "${author:=at hey dot com @bougyman}"
+: "${author:=Imran Khan <imrankhan@teknik.io>}"
 # created_by will be the prefix of the images, as well. i.e. bougyman/voidlinux
-: "${created_by:=bougyman}"
+: "${created_by:=natrys}"
 
 : "${REPOSITORY:=https://alpha.us.repo.voidlinux.org}"
 : "${ARCH:=x86_64}"

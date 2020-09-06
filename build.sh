@@ -8,8 +8,9 @@ source lib/functions.sh # Brings in optparse(), usage(), die(), and bud() functi
 optparse "$@"
 
 export BASEPKG ARCH REPOSITORY author created_by tag
-export BUILDAH_FORMAT=docker # Use docker instead of OCI format
-export STORAGE_DRIVER=vfs # Use vfs because overlay on overlay in Docker is whack
+export BUILDAH_FORMAT=oci
+export STORAGE_DRIVER=vfs
+# export STORAGE_DRIVER=overlay2
 
 declare -a published_tags
 # Normally would not set this, but we definitely want any error to be fatal in CI
@@ -29,7 +30,7 @@ build_image() { # {{{
     tag=$1
     shift
     ./buildah.sh -t "$tag" "$@"
-    scan_image "$tag" || die 99 "Trivy scan failed!"
+    # scan_image "$tag" || die 99 "Trivy scan failed!"
     published_tags+=( "$tag" )
 } # }}}
 
@@ -39,7 +40,7 @@ build_image_from_builder() { # {{{
     ./void-builder.sh -t "$tag" "$@"
     echo "Building final image for $tag" >&2
     ./voidlinux-final.sh -t "$tag" "$@"
-    scan_image "$tag" || die 99 "Trivy scan failed!"
+    # scan_image "$tag" || die 99 "Trivy scan failed!"
     published_tags+=( "$tag" )
 } # }}}
 
@@ -48,14 +49,15 @@ tag=${ARCH}_latest
 build_image "$tag"
 
 # Various other glibc variants
-for tag in ${ARCH}-glibc-locales_latest glibc-locales-tiny glibc-tiny
+# for tag in ${ARCH}-glibc-locales_latest glibc-locales-tiny glibc-tiny
+for tag in glibc-tiny
 do
     build_image_from_builder "$tag"
 done
 
 # Build tiny voidlinux with tmux, using glibc and busybox, no coreutils. Strip all libs
-tag=tmux-tiny
-build_image_from_builder "$tag" -b "tmux ncurses-base"
+# tag=tmux-tiny
+# build_image_from_builder "$tag" -b "tmux ncurses-base"
 
 # Build minimal voidlinux with musl (no glibc)
 export ARCH=x86_64-musl
@@ -67,16 +69,16 @@ tag=musl-tiny
 build_image_from_builder "$tag"
 
 # Build voidlinux with tmux, using musl and coreutils. Unstripped
-tag=musl-tmux
-build_image_from_builder "$tag" -b "base-minimal tmux ncurses-base" -c "/usr/bin/tmux"
+# tag=musl-tmux
+# build_image_from_builder "$tag" -b "base-minimal tmux ncurses-base" -c "/usr/bin/tmux"
 
 # Build tiny voidlinux with tmux, using musl and busybox, no coreutils. Strip all libs
-tag=musl-tmux-tiny
-build_image_from_builder "$tag" -b "tmux ncurses-base" -c "/usr/bin/tmux"
+# tag=musl-tmux-tiny
+# build_image_from_builder "$tag" -b "tmux ncurses-base" -c "/usr/bin/tmux"
 
 # Build tiny voidlinux with ruby, using musl and busybox, no coreutils. Strip all libs
-tag=musl-ruby-tiny
-build_image_from_builder "$tag" -b "ruby"
+# tag=musl-ruby-tiny
+# build_image_from_builder "$tag" -b "ruby"
 
 # publish images _only_ if we're run in CI. This allows us to mimic the whole
 # build locally in the exact manner the CI builder does, without any publishing to registries
