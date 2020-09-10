@@ -7,11 +7,11 @@ source lib/functions.sh # Brings in optparse(), usage(), die(), and bud() functi
 optparse "$@"
 
 # Import the void-based builder
-if [[ "$tag" =~ $striptags ]]
+if [[ ("$tag" =~ $striptags) || ("$tag" =~ "masterdir") ]]
 then
     image_name="${created_by}/void-voidbuilder:${tag}"
 else
-    image_name="${created_by}/void-voidbuilder:${ARCH}_latest"
+    image_name="${created_by}/void-voidbuilder:${ARCH}"
 fi
 voidbuild=$(buildah from "$image_name") || die 1 "Unable to build from ${image_name}"
 

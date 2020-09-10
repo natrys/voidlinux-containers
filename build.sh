@@ -9,8 +9,8 @@ optparse "$@"
 
 export BASEPKG ARCH REPOSITORY author created_by tag
 export BUILDAH_FORMAT=oci
-export STORAGE_DRIVER=vfs
-# export STORAGE_DRIVER=overlay2
+export STORAGE_DRIVER=overlay2
+# export STORAGE_DRIVER=vfs
 
 declare -a published_tags
 # Normally would not set this, but we definitely want any error to be fatal in CI
@@ -45,23 +45,21 @@ build_image_from_builder() { # {{{
 } # }}}
 
 # Build standard minimal voidlinux with glibc (no glibc-locales)
-tag=${ARCH}_latest
-build_image "$tag"
+build_image "${ARCH}"
 
 # Various other glibc variants
 # for tag in ${ARCH}-glibc-locales_latest glibc-locales-tiny glibc-tiny
-for tag in glibc-tiny
-do
-    build_image_from_builder "$tag"
-done
+build_image_from_builder "glibc-tiny"
 
 # Build tiny voidlinux with tmux, using glibc and busybox, no coreutils. Strip all libs
 # tag=tmux-tiny
 # build_image_from_builder "$tag" -b "tmux ncurses-base"
 
+build_image_from_builder "masterdir-${ARCH}" -b "base-chroot"
+
 # Build minimal voidlinux with musl (no glibc)
 export ARCH=x86_64-musl
-tag=x86_64-musl_latest
+tag=x86_64-musl
 build_image "$tag"
 
 # Build tiny voidlinux with musl (no glibc) and busybox instead of coreutils
@@ -82,32 +80,33 @@ build_image_from_builder "$tag"
 
 # publish images _only_ if we're run in CI. This allows us to mimic the whole
 # build locally in the exact manner the CI builder does, without any publishing to registries
-if [ -n "$CI_REGISTRY_PASSWORD" ] # {{{
+if [ -n "$GHCR_TOKEN" ] # {{{
 then
     export REGISTRY_AUTH_FILE=${HOME}/auth.json # Set registry file location
-    echo "$CI_REGISTRY_PASSWORD" | buildah login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY" # Login to registry
+    export CI_REGISTRY=ghcr.io
+    export CI_REGISTRY_USER=natrys
+
+    echo "$GHCR_TOKEN" | podman login --authfile=${HOME}/auth.json -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY" # Login to registry
     
-    : "${FQ_IMAGE_NAME:=docker://${CI_REGISTRY}/bougyman/voidlinux-containers/voidlinux}"
+    : "${FQ_IMAGE_NAME:=${CI_REGISTRY}/${CI_REGISTRY_USER}/voidlinux}"
+ 
+    # Show us all the images built
+    buildah images
 
     set +x
     # Push everything to the registry
     for tag in "${published_tags[@]}"
     do
         echo "Publishing $tag"
-        podman push "bougyman/voidlinux:${tag}" "$FQ_IMAGE_NAME:${tag}"
+        podman push --authfile=${HOME}/auth.json "${created_by}/voidlinux:${tag}" "$FQ_IMAGE_NAME:${tag}"
     done
 
     # Push the glibc-tiny image as the :latest tag TODO: find a way to tag this instead of committing a new image signature for it
     echo "Publishing :latest tag for glibc-tiny"
-    podman push "bougyman/voidlinux:glibc-tiny" "$FQ_IMAGE_NAME:latest"
+    podman push "${created_by}/voidlinux:glibc-tiny" "$FQ_IMAGE_NAME:latest"
 
-    # Trigger Docker Hub builds, "$docker_hook" is supplied by gitlab, defined in this project's CI/CD "variables"
-    # shellcheck disable=SC2154
-    curl -X POST -H "Content-Type: application/json" --data '{"source_type": "Branch", "source_name": "main"}' "$docker_hook" || \
-        die 33 "Failed to trigger docker build"
-    echo
-    # Show us all the images built
-    buildah images
+    podman push --authfile=${HOME}/auth.json "${created_by}/voidlinux:masterdir-${ARCH}" "$FQ_IMAGE_NAME:masterdir-${ARCH}"
+
 fi # }}}
 
 # vim: set foldmethod=marker et ts=4 sts=4 sw=4 :

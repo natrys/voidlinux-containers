@@ -19,7 +19,7 @@ usage() { # {{{
         Options:
            -a ARCH - ARCH to use, (Default: x86_64)
                      See http://build.voidlinux.org for archs available
-           -t TAG  - The name of the image. Defaults to ${ARCH}-latest
+           -t TAG  - The name of the image. Defaults to ${ARCH}
            -b PKG  - The name of the "base" package to install. Default: 'base-minimal'. Set to '' to not install base at all
            -c CMD  - The command to use for the default container command (Default: /bin/sh)
 EOT
@@ -86,7 +86,7 @@ optparse() { # {{{
         esac
     done # }}}
     shift $((OPTIND-1))
-    : "${tag:=${ARCH}_latest}"
+    : "${tag:=${ARCH}}"
     export tag author created_by REPOSITORY ARCH BASEPKG striptags glibc_locale_tags container_cmd
 } # }}}
 # vim: set foldmethod=marker et ts=4 sts=4 sw=4 :

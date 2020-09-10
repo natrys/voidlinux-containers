@@ -1,0 +1,18 @@
+on: push
+
+jobs:
+  linux-x86_64:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - name: Install fuse-overlayfs
+        run: sudo apt-get install fuse-overlayfs
+
+      - name: Run build script in buildah unshare session
+        env:
+          GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
+        run: |
+          buildah unshare ./build.sh

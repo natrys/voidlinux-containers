@@ -7,7 +7,7 @@ source lib/functions.sh # Brings in optparse(), usage(), die(), and bud() functi
 optparse "$@"
 
 # Import alpine base builder
-alpine=$(buildah from "${created_by}/alpine-voidbuilder:${ARCH}_latest") || die 1 "Could not get alpine-builder image"
+alpine=$(buildah from "${created_by}/alpine-voidbuilder:${ARCH}") || die 1 "Could not get alpine-builder image"
 
 # Do not reap temp containers when debugging
 if [ -z "$BUILDAH_DEBUG" ]
@@ -110,11 +110,11 @@ bud config --created-by "$created_by" "$voidbuild"
 bud config --author "$author" --label name=void-voidbuilder "$voidbuild"
 bud unmount "$voidbuild"
 bud unmount "$alpine"
-if [[ "$tag" =~ $striptags ]]
+if [[ ("$tag" =~ $striptags) || ("$tag" =~ "masterdir") ]]
 then
     bud commit --squash "$voidbuild" "${created_by}/void-voidbuilder:${tag}"
 else
-    bud commit --squash "$voidbuild" "${created_by}/void-voidbuilder:${ARCH}_latest"
+    bud commit --squash "$voidbuild" "${created_by}/void-voidbuilder:${ARCH}"
 fi
 
 # vim: set foldmethod=marker et ts=4 sts=4 sw=4 :
