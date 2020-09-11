@@ -103,9 +103,7 @@ then
 
     # Push the glibc-tiny image as the :latest tag TODO: find a way to tag this instead of committing a new image signature for it
     echo "Publishing :latest tag for glibc-tiny"
-    podman push "${created_by}/voidlinux:glibc-tiny" "$FQ_IMAGE_NAME:latest"
-
-    podman push --authfile=${HOME}/auth.json "${created_by}/voidlinux:masterdir-${ARCH}" "$FQ_IMAGE_NAME:masterdir-${ARCH}"
+    podman push --authfile=${HOME}/auth.json "${created_by}/voidlinux:glibc-tiny" "$FQ_IMAGE_NAME:latest"
 
 fi # }}}
 
