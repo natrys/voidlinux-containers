@@ -1,3 +1,5 @@
+# on: push
+
 on:
   schedule:
     - cron: "0 6 */7 * *"
@@ -10,8 +12,10 @@ jobs:
         with:
           submodules: true
 
-      - name: Install fuse-overlayfs
-        run: sudo apt-get install fuse-overlayfs
+      - name: Upgrade buildah and install fuse-overlayfs
+        run: |
+          sudo apt-get -y update
+          sudo apt-get install buildah podman fuse-overlayfs
 
       - name: Run build script in buildah unshare session
         env:
