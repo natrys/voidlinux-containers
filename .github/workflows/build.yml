@@ -15,7 +15,7 @@ jobs:
       - name: Upgrade buildah and install fuse-overlayfs
         run: |
           sudo apt-get -y update
-          sudo apt-get install buildah podman fuse-overlayfs
+          sudo apt-get install -f buildah podman fuse-overlayfs
 
       - name: Run build script in buildah unshare session
         env:
