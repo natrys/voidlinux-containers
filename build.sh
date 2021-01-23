@@ -9,8 +9,8 @@ optparse "$@"
 
 export BASEPKG ARCH REPOSITORY author created_by tag
 export BUILDAH_FORMAT=oci
-export STORAGE_DRIVER=overlay2
-# export STORAGE_DRIVER=vfs
+# export STORAGE_DRIVER=overlay2
+export STORAGE_DRIVER=vfs
 
 declare -a published_tags
 # Normally would not set this, but we definitely want any error to be fatal in CI
@@ -86,7 +86,7 @@ then
     export CI_REGISTRY=ghcr.io
     export CI_REGISTRY_USER=natrys
 
-    echo "$GHCR_TOKEN" | podman login --authfile=${HOME}/auth.json -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY" # Login to registry
+    echo "$GHCR_TOKEN" | buildah login --authfile=${HOME}/auth.json -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY" # Login to registry
     
     : "${FQ_IMAGE_NAME:=${CI_REGISTRY}/${CI_REGISTRY_USER}/voidlinux}"
  
@@ -98,12 +98,12 @@ then
     for tag in "${published_tags[@]}"
     do
         echo "Publishing $tag"
-        podman push --authfile=${HOME}/auth.json "${created_by}/voidlinux:${tag}" "$FQ_IMAGE_NAME:${tag}"
+        buildah push --authfile=${HOME}/auth.json "${created_by}/voidlinux:${tag}" "$FQ_IMAGE_NAME:${tag}"
     done
 
     # Push the glibc-tiny image as the :latest tag TODO: find a way to tag this instead of committing a new image signature for it
     echo "Publishing :latest tag for glibc-tiny"
-    podman push --authfile=${HOME}/auth.json "${created_by}/voidlinux:glibc-tiny" "$FQ_IMAGE_NAME:latest"
+    buildah push --authfile=${HOME}/auth.json "${created_by}/voidlinux:glibc-tiny" "$FQ_IMAGE_NAME:latest"
 
 fi # }}}
 
