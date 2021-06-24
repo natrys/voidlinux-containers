@@ -1,4 +1,3 @@
-#!/bin/bash
 # This builds all 3 images. See Readme.adoc for details
 
 # shellcheck source=lib/functions.sh
@@ -8,7 +7,7 @@ source lib/functions.sh # Brings in optparse(), usage(), die(), and bud() functi
 optparse "$@"
 
 # Export build variables
-export BASEPKG ARCH REPOSITORY author created_by tag striptags glibc_tags container_cmd
+export BASEPKG ARCH REPOSITORY REPO_GLIBC REPO_MUSL author created_by tag striptags glibc_tags container_cmd
 
 # Build all 3 images
 ./alpine-builder.sh && \

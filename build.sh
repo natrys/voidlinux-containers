@@ -7,7 +7,7 @@ source lib/functions.sh # Brings in optparse(), usage(), die(), and bud() functi
 # Parse command line options
 optparse "$@"
 
-export BASEPKG ARCH REPOSITORY author created_by tag
+export BASEPKG ARCH REPOSITORY REPO_GLIBC REPO_MUSL author created_by tag
 export BUILDAH_FORMAT=oci
 # export STORAGE_DRIVER=overlay2
 export STORAGE_DRIVER=vfs
@@ -49,7 +49,8 @@ build_image "${ARCH}"
 
 # Various other glibc variants
 # for tag in ${ARCH}-glibc-locales_latest glibc-locales-tiny glibc-tiny
-build_image_from_builder "glibc-tiny"
+build_image_from_builder "${ARCH}-glibc-tiny"
+build_image_from_builder "${ARCH}-glibc-locales-tiny"
 
 # Build tiny voidlinux with tmux, using glibc and busybox, no coreutils. Strip all libs
 # tag=tmux-tiny
@@ -58,13 +59,11 @@ build_image_from_builder "glibc-tiny"
 build_image_from_builder "masterdir-${ARCH}" -b "base-chroot"
 
 # Build minimal voidlinux with musl (no glibc)
-export ARCH=x86_64-musl
-tag=x86_64-musl
-build_image "$tag"
+export ARCH="${ARCH}-musl"
+build_image "${ARCH}"
 
 # Build tiny voidlinux with musl (no glibc) and busybox instead of coreutils
-tag=musl-tiny
-build_image_from_builder "$tag"
+build_image_from_builder "${ARCH}-tiny"
 
 # Build voidlinux with tmux, using musl and coreutils. Unstripped
 # tag=musl-tmux
@@ -102,9 +101,10 @@ then
     done
 
     # Push the glibc-tiny image as the :latest tag TODO: find a way to tag this instead of committing a new image signature for it
-    echo "Publishing :latest tag for glibc-tiny"
-    buildah push --authfile=${HOME}/auth.json "${created_by}/voidlinux:glibc-tiny" "$FQ_IMAGE_NAME:latest"
-
+    if [[ "$ARCH" =~ "x86_64" ]]; then
+        echo "Publishing :latest tag for glibc-tiny"
+        buildah push --authfile=${HOME}/auth.json "${created_by}/voidlinux:${ARCH}-glibc-tiny" "$FQ_IMAGE_NAME:latest"
+    fi
 fi # }}}
 
 # vim: set foldmethod=marker et ts=4 sts=4 sw=4 :

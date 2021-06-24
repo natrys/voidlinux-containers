@@ -32,8 +32,8 @@ bud run "$voidbuild" -- sh -c "xbps-reconfigure -a && mkdir -p /target/var/cache
 buildah copy "$voidbuild" confs/noextract.conf /target/etc/xbps.d/noextract.conf
 
 bud run "$voidbuild" -- sh -c "XBPS_ARCH=${ARCH} xbps-install -yMU \
-                                  --repository=${REPOSITORY}/current \
-                                  --repository=${REPOSITORY}/current/musl \
+                                  --repository=${REPO_GLIBC} \
+                                  --repository=${REPO_MUSL} \
                                   -r /target \
                                   xbps base-files ca-certificates"
 
@@ -41,8 +41,8 @@ if [ -n "$BASEPKG" ]
 then
     echo "Installing '$BASEPKG'" >&2
     bud run "$voidbuild" -- sh -c "XBPS_ARCH=${ARCH} xbps-install -yMU \
-                                      --repository=${REPOSITORY}/current \
-                                      --repository=${REPOSITORY}/current/musl \
+                                      --repository=${REPO_GLIBC} \
+                                      --repository=${REPO_MUSL} \
                                       ${BASEPKG} -r /target"
 
     # Run any package specific hooks (to remove docs, configure, etc)
@@ -74,8 +74,8 @@ then
     # Install busybox
     echo "Arch is ${ARCH}"
     bud run "$voidbuild" -- sh -c "XBPS_ARCH=${ARCH} xbps-install -yMU \
-                                      --repository=${REPOSITORY}/current \
-                                      --repository=${REPOSITORY}/current/musl \
+                                      --repository=${REPO_GLIBC} \
+                                      --repository=${REPO_MUSL} \
                                       busybox -r /target"
     # Exclude lots of packages
     mapfile -t tiny_excludes < tinyexcludes
@@ -98,8 +98,8 @@ then
     then
         # Retains only en_US, C, and POSIX glibc-locale files/functionality
         bud run "$voidbuild" -- sh -c "XBPS_ARCH=${ARCH} xbps-install -yMU  \
-                                          --repository=${REPOSITORY}/current \
-                                          --repository=${REPOSITORY}/current/musl \
+                                          --repository=${REPO_GLIBC} \
+                                          --repository=${REPO_MUSL} \
                                           glibc-locales -r /target && \
                                        sed -i 's/^#en_US/en_US/' /target/etc/default/libc-locales"
     fi

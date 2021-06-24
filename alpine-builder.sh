@@ -20,8 +20,9 @@ bud run "$alpine" -- apk add ca-certificates curl
 wget -O- "${REPOSITORY}/static/xbps-static-latest.$(uname -m)-musl.tar.xz" | tar Jx -C "$alpine_mount"
 XBPS_ARCH=$ARCH
 export XBPS_ARCH
-bud run "$alpine" -- xbps-install.static -yMU --repository=${REPOSITORY}/current \
-                                             --repository=${REPOSITORY}/current/musl -r /target base-minimal binutils busybox
+echo $REPO_MUSL
+bud run "$alpine" -- xbps-install.static -yMU --repository=${REPO_GLIBC} \
+                                              --repository=${REPO_MUSL} -r /target base-minimal binutils busybox
 
 # Commit alpine-voidbuilder
 bud config --created-by "$created_by" "$alpine"
