@@ -103,7 +103,7 @@ then
     # Push the glibc-tiny image as the :latest tag TODO: find a way to tag this instead of committing a new image signature for it
     if [[ "$ARCH" =~ "x86_64" ]]; then
         echo "Publishing :latest tag for glibc-tiny"
-        buildah push --authfile=${HOME}/auth.json "${created_by}/voidlinux:${ARCH}-glibc-tiny" "$FQ_IMAGE_NAME:latest"
+        buildah push --authfile=${HOME}/auth.json "${created_by}/voidlinux:${ARCH/musl/glibc}-tiny" "$FQ_IMAGE_NAME:latest"
     fi
 fi # }}}
 
