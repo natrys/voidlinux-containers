@@ -5,24 +5,13 @@
 # created_by will be the prefix of the images, as well. i.e. bougyman/voidlinux
 : "${created_by:=natrys}"
 
-: "${REPOSITORY:=https://mirrors.servercentral.com/voidlinux/}"
+: "${REPOSITORY:=https://mirrors.servercentral.com/voidlinux}"
 : "${ARCH:=x86_64}"
 : "${BASEPKG:=base-minimal}"
 
 : "${container_cmd:=/bin/sh}"
 : "${striptags:="stripped|tiny"}"
 : "${glibc_locale_tags:="glibc-locales|tmux"}"
-
-case "${ARCH}" in
-    x86_64)
-        REPO_GLIBC=${REPOSITORY}/current
-        REPO_MUSL=${REPOSITORY}/current/musl
-        ;;
-    aarch64)
-        REPO_GLIBC=${REPOSITORY}/current/aarch64
-        REPO_MUSL=${REPOSITORY}/current/aarch64
-        ;;
-esac
 
 usage() { # {{{
     cat <<-EOT
@@ -98,6 +87,18 @@ optparse() { # {{{
     done # }}}
     shift $((OPTIND-1))
     : "${tag:=${ARCH}}"
+
+    case "${ARCH}" in
+        x86_64)
+            REPO_GLIBC=${REPOSITORY}/current
+            REPO_MUSL=${REPOSITORY}/current/musl
+            ;;
+        aarch64)
+            REPO_GLIBC=${REPOSITORY}/current/aarch64
+            REPO_MUSL=${REPOSITORY}/current/aarch64
+            ;;
+    esac
+
     export tag author created_by REPOSITORY REPO_GLIBC REPO_MUSL ARCH BASEPKG striptags glibc_locale_tags container_cmd
 } # }}}
 # vim: set foldmethod=marker et ts=4 sts=4 sw=4 :
