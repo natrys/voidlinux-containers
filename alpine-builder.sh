@@ -22,7 +22,10 @@ XBPS_ARCH=$ARCH
 export XBPS_ARCH
 echo $REPO_MUSL
 bud run "$alpine" -- xbps-install.static -yMU --repository=${REPO_GLIBC} \
-                                              --repository=${REPO_MUSL} -r /target base-minimal binutils busybox
+                                              --repository=${REPO_GLIBC_BOOTSTRAP} \
+                                              --repository=${REPO_MUSL} \
+                                              --repository=${REPO_MUSL_BOOTSTRAP} \
+                                              -r /target base-minimal binutils busybox
 
 # Commit alpine-voidbuilder
 bud config --created-by "$created_by" "$alpine"

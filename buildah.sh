@@ -7,7 +7,7 @@ source lib/functions.sh # Brings in optparse(), usage(), die(), and bud() functi
 optparse "$@"
 
 # Export build variables
-export BASEPKG ARCH REPOSITORY REPO_GLIBC REPO_MUSL author created_by tag striptags glibc_tags container_cmd
+export BASEPKG ARCH REPOSITORY REPO_GLIBC REPO_GLIBC_BOOTSTRAP REPO_MUSL REPO_MUSL_BOOTSTRAP author created_by tag striptags glibc_tags container_cmd
 
 # Build all 3 images
 ./alpine-builder.sh && \

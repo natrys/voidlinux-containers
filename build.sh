@@ -7,7 +7,7 @@ source lib/functions.sh # Brings in optparse(), usage(), die(), and bud() functi
 # Parse command line options
 optparse "$@"
 
-export BASEPKG ARCH REPOSITORY REPO_GLIBC REPO_MUSL author created_by tag
+export BASEPKG ARCH REPOSITORY REPO_GLIBC REPO_GLIBC_BOOTSTRAP REPO_MUSL REPO_MUSL_BOOTSTRAP author created_by tag
 export BUILDAH_FORMAT=oci
 # export STORAGE_DRIVER=overlay2
 export STORAGE_DRIVER=vfs

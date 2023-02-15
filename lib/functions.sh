@@ -91,15 +91,19 @@ optparse() { # {{{
     case "${ARCH}" in
         x86_64)
             REPO_GLIBC=${REPOSITORY}/current
+            REPO_GLIBC_BOOTSTRAP=${REPOSITORY}/current/bootstrap
             REPO_MUSL=${REPOSITORY}/current/musl
+            REPO_MUSL_BOOTSTRAP=${REPOSITORY}/current/musl/bootstrap
             ;;
         aarch64)
             REPO_GLIBC=${REPOSITORY}/current/aarch64
+            REPO_GLIBC_BOOTSTRAP=${REPOSITORY}/current/bootstrap
             REPO_MUSL=${REPOSITORY}/current/aarch64
+            REPO_MUSL_BOOTSTRAP=${REPOSITORY}/current/musl/bootstrap
             ;;
     esac
 
-    export tag author created_by REPOSITORY REPO_GLIBC REPO_MUSL ARCH BASEPKG striptags glibc_locale_tags container_cmd
+    export tag author created_by REPOSITORY REPO_GLIBC REPO_GLIBC_BOOTSTRAP REPO_MUSL REPO_MUSL_BOOTSTRAP ARCH BASEPKG striptags glibc_locale_tags container_cmd
 } # }}}
 # vim: set foldmethod=marker et ts=4 sts=4 sw=4 :
 
