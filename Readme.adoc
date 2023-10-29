@@ -21,7 +21,7 @@ All configuration can be done through environment variables
 
 `author`:: The full 'MAINTAINER' value for image and container metadata
 `created_by`:: This becomes the prefix all images use, i.e. with 'created_by=foo', the images would be `foo/alpine-voidbuilder`, `foo/void-voidbuilder`, and `foo/voidlinux`
-`REPOSITORY`:: This is the url of the voidlinux repository to use (default: https://alpha.de.repo.voidlinux.org)
+`REPOSITORY`:: This is the url of the voidlinux repository to use (default: https://repo-default.voidlinux.org)
 `ARCH`:: The architecture to build (default: x86_64). See build.voidlinux.org for available arches.
 `BASEPKG`:: The base package (or packages) to install in the final voidlinux container. (default: base-minimal)
 `tag`:: The tag to give this image (Default: `${ARCH}-latest`
